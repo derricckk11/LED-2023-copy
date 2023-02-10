@@ -10,15 +10,12 @@ public class LED2 extends SubsystemBase {
         r = new DigitalOutput(0);
         g = new DigitalOutput(1);
         b = new DigitalOutput(2);
-        // r.enablePWM(0);
-        // g.enablePWM(0);
-        // b.enablePWM(0);
     }
 
-    public void startLED() {
-        // r.pulse(6d);
-        g.set(true);
-        // b.pulse(2d);
+    public void startLED(boolean red, boolean green, boolean blue) {
+        r.set(red);
+        g.set(green);
+        b.set(blue);
     }
 
     public void stopLED() {
