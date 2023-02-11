@@ -23,4 +23,23 @@ public class LED2 extends SubsystemBase {
         g.set(false);
         b.set(false);
     }
+    /* Future LEDStatus code
+    public class LEDStatus {
+        public boolean red;
+        public boolean green;
+        public boolean blue;
+    
+        public LEDStatus(boolean red, boolean green, boolean blue) {
+            this.red = red;
+            this.green = green;
+            this.blue = blue;
+        }
+    }
+    
+    public LEDStatus getLEDstatus() {
+        LEDStatus status = new LEDStatus(r.get(), g.get(), b.get());
+        return status;
+    }
+     */
+    
 } 
