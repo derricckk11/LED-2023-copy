@@ -8,8 +8,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.LED2;
+import frc.robot.subsystems.LED2.LEDStatus;
 
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,7 +19,6 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
  * project.
  */
 public class Robot extends TimedRobot {
-  private WPI_Pigeon2 gyro;
   private LED2 led = new LED2();
 
   /**
@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    gyro = new WPI_Pigeon2(1); // Pigeon is on CAN Bus with device ID 0
+    
   }
 
   /**
@@ -61,10 +61,11 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     led.startLED(true, true, true);
-
+    
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {}
 }
+

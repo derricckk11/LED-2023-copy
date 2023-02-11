@@ -19,12 +19,12 @@ public class LED2 extends SubsystemBase {
     }
 
     public void stopLED() {
-        /*r.set(false);
+        r.set(false);
         g.set(false);
-        b.set(false);*/
+        b.set(false);
         g.set(false);
     }
-    /* Future LEDStatus code
+    
     public class LEDStatus {
         public boolean red;
         public boolean green;
@@ -35,12 +35,16 @@ public class LED2 extends SubsystemBase {
             this.green = green;
             this.blue = blue;
         }
+
     }
     
-    public LEDStatus getLEDstatus() {
+    public LEDStatus getLEDstatus(){
         LEDStatus status = new LEDStatus(r.get(), g.get(), b.get());
+       
+        System.out.println(status);
         return status;
+    
     }
-     */
+     
     
 } 
