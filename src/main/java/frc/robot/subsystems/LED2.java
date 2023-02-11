@@ -22,7 +22,6 @@ public class LED2 extends SubsystemBase {
         r.set(false);
         g.set(false);
         b.set(false);
-        g.set(false);
     }
     
     public class LEDStatus {
