@@ -22,8 +22,9 @@ public class LED2 extends SubsystemBase {
     }
 
     public void stopLED() {
-        r.set(false);
+        /*r.set(false);
         g.set(false);
-        b.set(false);
+        b.set(false);*/
+        g.set(false);
     }
 } 
