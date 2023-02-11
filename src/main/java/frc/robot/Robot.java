@@ -61,7 +61,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     led.startLED(true, true, true);
-
+    led.getLEDStatus();
   }
 
   /** This function is called periodically during operator control. */
