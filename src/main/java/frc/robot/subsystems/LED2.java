@@ -11,17 +11,18 @@ public class LED2 extends SubsystemBase {
         g = new DigitalOutput(1);
         b = new DigitalOutput(2);
     }
-    
+
     public void startLED(boolean red, boolean green, boolean blue) {
         r.set(red);
         g.set(green);
         b.set(blue);
     }
-    
+
     public void stopLED() {
         r.set(false);
         g.set(false);
         b.set(false);
+        g.set(false);
     }
     
     public class LEDStatus {
@@ -38,7 +39,6 @@ public class LED2 extends SubsystemBase {
     
     public LEDStatus getLEDstatus(){
         LEDStatus status = new LEDStatus(r.get(), g.get(), b.get());
-       
         System.out.println(status);
         return status;
     }
