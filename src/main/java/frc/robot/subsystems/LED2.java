@@ -22,6 +22,7 @@ public class LED2 extends SubsystemBase {
         r.set(false);
         g.set(false);
         b.set(false);
+        g.set(false);
     }
     
     public class LEDStatus {
@@ -36,13 +37,10 @@ public class LED2 extends SubsystemBase {
         }
     }
     
-    public LEDStatus getLEDStatus() {
+    public LEDStatus getLEDstatus() {
         LEDStatus status = new LEDStatus(r.get(), g.get(), b.get());
-        System.out.println("Red: " + r.get());
-        System.out.println("Green: " + g.get());
-        System.out.println("Blue: " + b.get());
         return status;
     }
-     
+     */
     
 } 
