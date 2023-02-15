@@ -41,6 +41,4 @@ public class LED2 extends SubsystemBase {
         LEDStatus status = new LEDStatus(r.get(), g.get(), b.get());
         return status;
     }
-     */
-    
-} 
+}
