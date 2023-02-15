@@ -1,15 +1,13 @@
 package frc.robot.subsystems;
-import java.util.concurrent.TimeUnit;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class LED extends SubsystemBase{
-    public AddressableLED LEDstrip;
-    public AddressableLEDBuffer LEDBuffer;
-    public int rainbowFirstPixelHue;
-    public boolean blinkStatus;
+public class LED extends SubsystemBase {
+    private AddressableLED LEDstrip;
+    private AddressableLEDBuffer LEDBuffer;
+    private int rainbowFirstPixelHue;
 
     public LED() {
         LEDstrip = new AddressableLED(3);
@@ -18,11 +16,11 @@ public class LED extends SubsystemBase{
         LEDstrip.setData(LEDBuffer);
     }
 
-    public void startLED(){
+    public void startLED() {
         LEDstrip.start();
     }
 
-    public void stopLED(){
+    public void stopLED() {
         LEDstrip.stop();
     }
 
@@ -44,19 +42,5 @@ public class LED extends SubsystemBase{
         }
         rainbowFirstPixelHue += 3;
         rainbowFirstPixelHue %= 180;
-    }
-
-    public void startBlink() throws InterruptedException {
-        while (blinkStatus = true) {
-            stopLED();
-            TimeUnit.SECONDS.sleep((long) 0.5);
-            startLED();
-            TimeUnit.SECONDS.sleep((long) 0.5);
-        }
-    }
-
-    public void stopBlink() throws InterruptedException {
-        blinkStatus = false;
-        stopLED();
     }
 }
