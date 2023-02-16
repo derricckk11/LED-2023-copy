@@ -35,6 +35,10 @@ public class LED extends SubsystemBase {
         setLED(160, 32, 240);
     }
 
+    public void setYellow() {
+        setLED(255,255,0);
+    }
+
     public void rainbow() {
         for (int i = 0; i < LEDBuffer.getLength(); i++) {
             final var hue = (rainbowFirstPixelHue + (i * 180 / LEDBuffer.getLength())) % 180;

@@ -4,12 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.BlinkLED;
 import frc.robot.subsystems.LED;
-import frc.robot.subsystems.LED2;
-
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,16 +19,30 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
  * project.
  */
 public class Robot extends TimedRobot {
-  private WPI_Pigeon2 gyro;
-  private LED2 led = new LED2();
+
+  private LED led = new LED();
+  private final Joystick joystick = new Joystick(1);
+  private final JoystickButton yellowLED = new JoystickButton(joystick, 1);
+  private final JoystickButton purpleLED = new JoystickButton(joystick, 2);
+  private final JoystickButton whiteLED = new JoystickButton(joystick, 3);
+  private final JoystickButton stopLED = new JoystickButton(joystick, 4);
+  private final JoystickButton blinkLED = new JoystickButton(joystick, 5);
 
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
+  public void configureButtonBindings(){
+    yellowLED.onTrue(new InstantCommand(() -> led.setLED(255, 255, 0)));
+    purpleLED.onTrue(new InstantCommand(() -> led.setLED(255, 0, 255)));
+    whiteLED.onTrue(new InstantCommand(() -> led.setLED(255, 255, 255)));
+    stopLED.onTrue(new InstantCommand(() -> led.stopLED()));
+    blinkLED.toggleOnTrue(new BlinkLED(led));
+  }
+
   @Override
   public void robotInit() {
-    gyro = new WPI_Pigeon2(1); // Pigeon is on CAN Bus with device ID 0
+
   }
 
   /**
@@ -55,13 +70,13 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    // System.out.println(gyro.getRoll());
+    
   }
 
   @Override
   public void teleopInit() {
-    led.startLED(true, true, true);
-    led.getLEDstatus();
+    configureButtonBindings();
+    //led.startLED(true, true, true);
   }
 
   /** This function is called periodically during operator control. */
