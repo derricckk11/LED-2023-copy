@@ -3,7 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.LED;
 
-public class BlinkLED extends CommandBase {
+public class LEDCommands extends CommandBase {
     private LED led;
     private Thread t = new Thread(() -> {
         try {
@@ -16,7 +16,7 @@ public class BlinkLED extends CommandBase {
         } catch (InterruptedException e) {}
     });
 
-    public BlinkLED(LED led) {
+    public LEDCommands(LED led) {
         this.led = led;
         
         addRequirements(led);

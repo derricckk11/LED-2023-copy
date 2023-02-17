@@ -8,6 +8,16 @@ public class LED extends SubsystemBase {
     private AddressableLED LEDstrip;
     private AddressableLEDBuffer LEDBuffer;
     private int rainbowFirstPixelHue;
+    private Thread t = new Thread(() -> {
+        try {
+            while (true) {
+                stopLED();
+                wait(500l);
+                startLED();
+                wait(500l);
+            }
+        } catch (InterruptedException e) {}
+    });
 
     public LED() {
         LEDstrip = new AddressableLED(3);
@@ -46,5 +56,14 @@ public class LED extends SubsystemBase {
         }
         rainbowFirstPixelHue += 3;
         rainbowFirstPixelHue %= 180;
+    }
+
+    public void blink(){
+        t.start();
+    }
+
+    public void stopBlink(boolean i){
+        t.interrupt();
+        stopLED();
     }
 }
