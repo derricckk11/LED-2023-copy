@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.BlinkLED;
 import frc.robot.subsystems.LED;
 
 /**
@@ -20,27 +21,25 @@ import frc.robot.subsystems.LED;
 public class Robot extends TimedRobot {
 
   private LED led = new LED();
-  private final Joystick joystick = new Joystick(1);
-  private final JoystickButton yellowLED = new JoystickButton(joystick, 1);
-  private final JoystickButton purpleLED = new JoystickButton(joystick, 2);
-  private final JoystickButton whiteLED = new JoystickButton(joystick, 3);
-  private final JoystickButton rainbowLED = new JoystickButton(joystick, 4);
-  private final JoystickButton stopLED = new JoystickButton(joystick, 5);
-  private final JoystickButton blinkLED = new JoystickButton(joystick, 6);
+  private Joystick joystick = new Joystick(1);
+  private JoystickButton yellowLED = new JoystickButton(joystick, 1);
+  private JoystickButton purpleLED = new JoystickButton(joystick, 2);
+  private JoystickButton whiteLED = new JoystickButton(joystick, 3);
+  private JoystickButton rainbowLED = new JoystickButton(joystick, 4);
+  private JoystickButton stopLED = new JoystickButton(joystick, 5);
+  private JoystickButton blinkLED = new JoystickButton(joystick, 6);
 
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   public void configureButtonBindings(){
-    yellowLED.onTrue(new InstantCommand(() -> led.setLED(255, 255, 0)));
-    purpleLED.onTrue(new InstantCommand(() -> led.setLED(255, 0, 255)));
-    whiteLED.onTrue(new InstantCommand(() -> led.setLED(255, 255, 255)));
+    yellowLED.onTrue(new InstantCommand(() -> led.setPurple()));
+    purpleLED.onTrue(new InstantCommand(() -> led.setYellow()));
+    whiteLED.onTrue(new InstantCommand(() -> led.setWhite()));
     rainbowLED.onTrue(new InstantCommand(() -> led.rainbow()));
     stopLED.onTrue(new InstantCommand(() -> led.stopLED()));
-    blinkLED.toggleOnTrue
-    (new InstantCommand(() -> led.blink())).toggleOnFalse
-    (new InstantCommand(() -> led.stopBlink(true)));
+    blinkLED.toggleOnTrue(new BlinkLED(led));
   }
 
   @Override
@@ -85,4 +84,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {}
+
+  @Override
+  public void disabledPeriodic() {}
 }

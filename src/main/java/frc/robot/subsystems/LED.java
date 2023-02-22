@@ -5,40 +5,42 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LED extends SubsystemBase {
-    private AddressableLED LEDstrip;
-    private AddressableLEDBuffer LEDBuffer;
+    private AddressableLED strip;
+    private AddressableLEDBuffer buffer;
     private int rainbowFirstPixelHue;
-    private Thread t = new Thread(() -> {
-        try {
-            while (true) {
-                stopLED();
-                wait(500l);
-                startLED();
-                wait(500l);
-            }
-        } catch (InterruptedException e) {}
-    });
 
     public LED() {
-        LEDstrip = new AddressableLED(3);
-        LEDBuffer = new AddressableLEDBuffer(300);
-        LEDstrip.setLength(LEDBuffer.getLength());
-        LEDstrip.setData(LEDBuffer);
+        strip = new AddressableLED(3);
+        buffer = new AddressableLEDBuffer(300);
+        strip.setLength(buffer.getLength());
+        strip.setData(buffer);
     }
 
     public void startLED() {
-        LEDstrip.start();
+        strip.start();
     }
 
     public void stopLED() {
-        LEDstrip.stop();
+        strip.stop();
+    }
+
+    public double[] getColor() {
+        var led = buffer.getLED(0);
+        return new double[]{led.red, led.green, led.blue};
     }
 
     public void setLED(int r, int g, int b) {
-        for (int i = 0; i < LEDBuffer.getLength(); i++) {
-            LEDBuffer.setRGB(i, r, g, b);
+        for (int i = 0; i < buffer.getLength(); i++) {
+            buffer.setRGB(i, r, g, b);
         }
-        LEDstrip.setData(LEDBuffer);
+        strip.setData(buffer);
+    }
+
+    public void setLED(double r, double g, double b) {
+        for (int i = 0; i < buffer.getLength(); i++) {
+            buffer.setRGB(i, (int)(r*255), (int)(g*255), (int)(b*255));
+        }
+        strip.setData(buffer);
     }
 
     public void setPurple() {
@@ -49,21 +51,20 @@ public class LED extends SubsystemBase {
         setLED(255,255,0);
     }
 
+    public void setWhite() {
+        setLED(255, 255, 255);
+    }
+
+    public void setBlack() {
+        setLED(0, 0, 0);
+    }
+
     public void rainbow() {
-        for (int i = 0; i < LEDBuffer.getLength(); i++) {
-            final var hue = (rainbowFirstPixelHue + (i * 180 / LEDBuffer.getLength())) % 180;
-            LEDBuffer.setHSV(i, hue, 255, 128);
+        for (int i = 0; i < buffer.getLength(); i++) {
+            final var hue = (rainbowFirstPixelHue + (i * 180 / buffer.getLength())) % 180;
+            buffer.setHSV(i, hue, 255, 128);
         }
         rainbowFirstPixelHue += 3;
         rainbowFirstPixelHue %= 180;
-    }
-
-    public void blink(){
-        t.start();
-    }
-
-    public void stopBlink(boolean i){
-        t.interrupt();
-        stopLED();
     }
 }
