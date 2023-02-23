@@ -34,7 +34,7 @@ public class LED extends SubsystemBase {
             buffer.setRGB(i, r, g, b);
         }
         strip.setData(buffer);
-    }
+    } 
 
     public void setLED(double r, double g, double b) {
         for (int i = 0; i < buffer.getLength(); i++) {
@@ -44,15 +44,16 @@ public class LED extends SubsystemBase {
     }
 
     public void setPurple() {
-        setLED(160, 32, 240);
+        
+        setLED(70, 0,100);
     }
 
     public void setYellow() {
-        setLED(255,255,0);
+        setLED(150,75,0);
     }
 
     public void setWhite() {
-        setLED(255, 255, 255);
+        setLED(100, 100, 100);
     }
 
     public void setBlack() {
@@ -61,10 +62,11 @@ public class LED extends SubsystemBase {
 
     public void rainbow() {
         for (int i = 0; i < buffer.getLength(); i++) {
-            final var hue = (rainbowFirstPixelHue + (i * 180 / buffer.getLength())) % 180;
+            var hue = (rainbowFirstPixelHue + (i * 180 / buffer.getLength())) % 180;
             buffer.setHSV(i, hue, 255, 128);
+            strip.setData(buffer);
         }
-        rainbowFirstPixelHue += 3;
-        rainbowFirstPixelHue %= 180;
+        rainbowFirstPixelHue += 1;
+        rainbowFirstPixelHue %= 60;
     }
 }

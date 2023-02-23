@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.BlinkLED;
 import frc.robot.subsystems.LED;
@@ -37,7 +38,7 @@ public class Robot extends TimedRobot {
     yellowLED.onTrue(new InstantCommand(() -> led.setPurple()));
     purpleLED.onTrue(new InstantCommand(() -> led.setYellow()));
     whiteLED.onTrue(new InstantCommand(() -> led.setWhite()));
-    rainbowLED.onTrue(new InstantCommand(() -> led.rainbow()));
+    rainbowLED.toggleOnTrue(new InstantCommand(() -> led.rainbow()).andThen(new WaitCommand(0.08)).repeatedly());
     stopLED.onTrue(new InstantCommand(() -> led.stopLED()));
     blinkLED.toggleOnTrue(new BlinkLED(led));
   }
