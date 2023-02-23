@@ -13,7 +13,13 @@ public class LED extends SubsystemBase {
         strip = new AddressableLED(3);
         buffer = new AddressableLEDBuffer(300);
         strip.setLength(buffer.getLength());
-        strip.setData(buffer);
+        rainbowFirstPixelHue = 0;
+    }
+
+    public void clear() {
+        for (int i = 0; i < buffer.getLength(); i++) {
+            buffer.setRGB(i, 0, 0, 0);
+        }
     }
 
     public void startLED() {
@@ -44,16 +50,21 @@ public class LED extends SubsystemBase {
     }
 
     public void setPurple() {
-        
+        clear();
         setLED(70, 0,100);
+        
     }
 
     public void setYellow() {
+        clear();
         setLED(150,75,0);
+        
     }
 
     public void setWhite() {
+        clear();
         setLED(100, 100, 100);
+        
     }
 
     public void setBlack() {

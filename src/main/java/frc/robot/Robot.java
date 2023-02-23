@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
     purpleLED.onTrue(new InstantCommand(() -> led.setYellow()));
     whiteLED.onTrue(new InstantCommand(() -> led.setWhite()));
     rainbowLED.toggleOnTrue(new InstantCommand(() -> led.rainbow()).andThen(new WaitCommand(0.08)).repeatedly());
-    stopLED.onTrue(new InstantCommand(() -> led.stopLED()));
+    stopLED.onTrue(new InstantCommand(() -> led.clear()));
     blinkLED.toggleOnTrue(new BlinkLED(led));
   }
 
