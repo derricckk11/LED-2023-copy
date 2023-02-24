@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.BlinkLED;
 import frc.robot.subsystems.LED;
+import frc.robot.subsystems.LED.LEDState;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,14 +20,13 @@ import frc.robot.subsystems.LED;
  * project.
  */
 public class Robot extends TimedRobot {
-
   private LED led = new LED();
   private Joystick joystick = new Joystick(1);
   private JoystickButton yellowLED = new JoystickButton(joystick, 1);
   private JoystickButton purpleLED = new JoystickButton(joystick, 2);
   private JoystickButton whiteLED = new JoystickButton(joystick, 3);
   private JoystickButton rainbowLED = new JoystickButton(joystick, 4);
-  private JoystickButton stopLED = new JoystickButton(joystick, 5);
+  private JoystickButton blackLED = new JoystickButton(joystick, 5);
   private JoystickButton blinkLED = new JoystickButton(joystick, 6);
 
   /**
@@ -35,12 +34,12 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   public void configureButtonBindings(){
-    yellowLED.onTrue(new InstantCommand(() -> led.setPurple()));
-    purpleLED.onTrue(new InstantCommand(() -> led.setYellow()));
-    whiteLED.onTrue(new InstantCommand(() -> led.setWhite()));
-    rainbowLED.toggleOnTrue(new InstantCommand(() -> led.rainbow()).andThen(new WaitCommand(0.08)).repeatedly());
-    stopLED.onTrue(new InstantCommand(() -> led.clear()));
-    blinkLED.toggleOnTrue(new BlinkLED(led));
+    yellowLED.onTrue(new InstantCommand(() -> led.setState(LEDState.YELLOW)));
+    purpleLED.onTrue(new InstantCommand(() -> led.setState(LEDState.PURPLE)));
+    whiteLED.onTrue(new InstantCommand(() -> led.setState(LEDState.WHITE)));
+    rainbowLED.onTrue(new InstantCommand(() -> led.setState(LEDState.RAINBOW)));
+    blackLED.onTrue(new InstantCommand(() -> led.setState(LEDState.BLACK)));
+    blinkLED.toggleOnTrue(new BlinkLED(led).repeatedly());
   }
 
   @Override
@@ -79,7 +78,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     configureButtonBindings();
-    led.startLED();
   }
 
   /** This function is called periodically during operator control. */

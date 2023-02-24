@@ -1,38 +1,61 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LED extends SubsystemBase {
+    public enum LEDState {
+        WHITE,
+        PURPLE,
+        YELLOW,
+        BLACK,
+        RAINBOW
+    }
+
+    private Map<LEDState, Command> commands = Map.of(
+        LEDState.WHITE, new InstantCommand(() -> setLED(100, 100, 100), this),
+        LEDState.PURPLE, new InstantCommand(() -> setLED(70, 0, 100), this),
+        LEDState.YELLOW, new InstantCommand(() -> setLED(150, 75, 0), this),
+        LEDState.BLACK, new InstantCommand(() -> setLED(0, 0, 0), this),
+        LEDState.RAINBOW, new RainbowLED(this).repeatedly()
+    );
     private AddressableLED strip;
     private AddressableLEDBuffer buffer;
-    private int rainbowFirstPixelHue;
+    private LEDState state;
 
-    public LED() {
+    public LED() { 
         strip = new AddressableLED(3);
         buffer = new AddressableLEDBuffer(300);
         strip.setLength(buffer.getLength());
-        rainbowFirstPixelHue = 0;
+        state = LEDState.BLACK;
+        startLED();
     }
 
-    public void clear() {
-        for (int i = 0; i < buffer.getLength(); i++) {
-            buffer.setRGB(i, 0, 0, 0);
-        }
+    public void setState(LEDState state) {
+        getStateCommand().cancel();
+        this.state = state;
+        startLED();
+    }
+
+    public Command getStateCommand() {
+        return commands.get(state);
     }
 
     public void startLED() {
         strip.start();
+        getStateCommand().schedule();
     }
 
     public void stopLED() {
+        getStateCommand().cancel();
+        setBlack();
         strip.stop();
-    }
-
-    public double[] getColor() {
-        var led = buffer.getLED(0);
-        return new double[]{led.red, led.green, led.blue};
     }
 
     public void setLED(int r, int g, int b) {
@@ -40,44 +63,34 @@ public class LED extends SubsystemBase {
             buffer.setRGB(i, r, g, b);
         }
         strip.setData(buffer);
-    } 
-
-    public void setLED(double r, double g, double b) {
-        for (int i = 0; i < buffer.getLength(); i++) {
-            buffer.setRGB(i, (int)(r*255), (int)(g*255), (int)(b*255));
-        }
-        strip.setData(buffer);
-    }
-
-    public void setPurple() {
-        clear();
-        setLED(70, 0,100);
-        
-    }
-
-    public void setYellow() {
-        clear();
-        setLED(150,75,0);
-        
-    }
-
-    public void setWhite() {
-        clear();
-        setLED(100, 100, 100);
-        
     }
 
     public void setBlack() {
         setLED(0, 0, 0);
     }
 
-    public void rainbow() {
-        for (int i = 0; i < buffer.getLength(); i++) {
-            var hue = (rainbowFirstPixelHue + (i * 180 / buffer.getLength())) % 180;
-            buffer.setHSV(i, hue, 255, 128);
-            strip.setData(buffer);
+    private static class RainbowLED extends CommandBase {
+        private LED led;
+
+        private RainbowLED(LED led) {
+            this.led = led;
+            addRequirements(led);
         }
-        rainbowFirstPixelHue += 1;
-        rainbowFirstPixelHue %= 60;
+
+        @Override
+        public void execute() {
+            int len = led.buffer.getLength();
+            double time = System.currentTimeMillis();
+            for (int i = 0; i < len; i++) {
+                int hue = (int) Math.floor((((time / 50 + i) / len) % 1) * 255);
+                led.buffer.setHSV(i, hue, 255, 128);
+            }
+            led.strip.setData(led.buffer);
+        }
+
+        @Override
+        public void end(boolean i) {
+            led.setBlack();
+        }
     }
 }
