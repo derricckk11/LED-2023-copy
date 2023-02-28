@@ -28,7 +28,9 @@ public class Robot extends TimedRobot {
   private JoystickButton led5 = new JoystickButton(joystick, 5);
   private JoystickButton led6 = new JoystickButton(joystick, 6);
   private JoystickButton led7 = new JoystickButton(joystick, 7);
-  private JoystickButton led12= new JoystickButton(joystick, 12);
+  private JoystickButton led8 = new JoystickButton(joystick, 8);
+  private JoystickButton led9 = new JoystickButton(joystick, 9);
+  private JoystickButton led13= new JoystickButton(joystick, 13);
   
 
   /**
@@ -40,10 +42,12 @@ public class Robot extends TimedRobot {
     purpleLED.onTrue(new InstantCommand(() -> led.setState(LEDState.PURPLE)));
     led3.onTrue(new InstantCommand(() -> led.setState(LEDState.RAINBOW)));
     led4.onTrue(new InstantCommand(() -> led.setState(LEDState.NONBINARY)));
-    led5.onTrue(new InstantCommand(() -> led.setState(LEDState.LESBIAN)));
+    led5.onTrue(new InstantCommand(() -> led.setState(LEDState.GENDERFLUID)));
     led6.onTrue(new InstantCommand(() -> led.setState(LEDState.TRANS)));
-    led7.onTrue(new InstantCommand(() -> led.setState(LEDState.BI)));
-    led12.toggleOnTrue(new LED.BlinkLED(led).repeatedly());
+    led7.onTrue(new InstantCommand(() -> led.setState(LEDState.GAY)));
+    led8.onTrue(new InstantCommand(() -> led.setState(LEDState.LESBIAN)));
+    led9.onTrue(new InstantCommand(() -> led.setState(LEDState.BI)));
+    led13.toggleOnTrue(new LED.BlinkLED(led).repeatedly());
   }
 
   @Override
