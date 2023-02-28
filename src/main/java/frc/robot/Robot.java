@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.BlinkLED;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.LED.LEDState;
 
@@ -39,7 +38,7 @@ public class Robot extends TimedRobot {
     whiteLED.onTrue(new InstantCommand(() -> led.setState(LEDState.WHITE)));
     rainbowLED.onTrue(new InstantCommand(() -> led.setState(LEDState.RAINBOW)));
     blackLED.onTrue(new InstantCommand(() -> led.setState(LEDState.BLACK)));
-    blinkLED.toggleOnTrue(new BlinkLED(led).repeatedly());
+    blinkLED.toggleOnTrue(new LED.BlinkLED(led).repeatedly());
   }
 
   @Override

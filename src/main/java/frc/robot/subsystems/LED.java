@@ -7,7 +7,9 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class LED extends SubsystemBase {
     public enum LEDState {
@@ -19,7 +21,7 @@ public class LED extends SubsystemBase {
     }
 
     private Map<LEDState, Command> commands = Map.of(
-        LEDState.WHITE, new InstantCommand(() -> setLED(100, 100, 100), this),
+        LEDState.WHITE, new InstantCommand(() -> setLED(75, 75, 75), this),
         LEDState.PURPLE, new InstantCommand(() -> setLED(70, 0, 100), this),
         LEDState.YELLOW, new InstantCommand(() -> setLED(150, 75, 0), this),
         LEDState.BLACK, new InstantCommand(() -> setLED(0, 0, 0), this),
@@ -54,7 +56,7 @@ public class LED extends SubsystemBase {
 
     public void stopLED() {
         getStateCommand().cancel();
-        setBlack();
+        setLED(0, 0, 0);
         strip.stop();
     }
 
@@ -63,10 +65,6 @@ public class LED extends SubsystemBase {
             buffer.setRGB(i, r, g, b);
         }
         strip.setData(buffer);
-    }
-
-    public void setBlack() {
-        setLED(0, 0, 0);
     }
 
     private static class RainbowLED extends CommandBase {
@@ -80,17 +78,21 @@ public class LED extends SubsystemBase {
         @Override
         public void execute() {
             int len = led.buffer.getLength();
-            double time = System.currentTimeMillis();
-            for (int i = 0; i < len; i++) {
-                int hue = (int) Math.floor((((time / 50 + i) / len) % 1) * 255);
-                led.buffer.setHSV(i, hue, 255, 128);
-            }
+            int offset = (int)Math.floor((System.currentTimeMillis()/10) % len);
+            for (int i = 0; i < len; i++)
+                led.buffer.setHSV((i+offset) % len, (int)Math.floor(i * 180/len), 255, 255);
             led.strip.setData(led.buffer);
         }
+    }
 
-        @Override
-        public void end(boolean i) {
-            led.setBlack();
+    public static class BlinkLED extends SequentialCommandGroup {
+        public BlinkLED(LED led){
+            super(
+                new InstantCommand(() -> led.stopLED()),
+                new WaitCommand(0.5d),
+                new InstantCommand(() -> led.startLED()),
+                new WaitCommand(0.5d)
+            );
         }
     }
 }
