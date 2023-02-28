@@ -4,6 +4,7 @@ import java.util.Map;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -17,7 +18,8 @@ public class LED extends SubsystemBase {
         PURPLE,
         YELLOW,
         BLACK,
-        RAINBOW
+        RAINBOW,
+        NONBINARY
     }
 
     private Map<LEDState, Command> commands = Map.of(
@@ -25,7 +27,10 @@ public class LED extends SubsystemBase {
         LEDState.PURPLE, new InstantCommand(() -> setLED(70, 0, 100), this),
         LEDState.YELLOW, new InstantCommand(() -> setLED(150, 75, 0), this),
         LEDState.BLACK, new InstantCommand(() -> setLED(0, 0, 0), this),
-        LEDState.RAINBOW, new RainbowLED(this).repeatedly()
+        LEDState.RAINBOW, new ChromaLED(this, (double i) -> Color.fromHSV((int)Math.floor(i * 180), 255, 255)).repeatedly(),
+        LEDState.NONBINARY, new LinearFlag(this, new int[]{
+            0xFCF434, 0xFCFCFC, 0x9C59D1, 0x2C2C2C
+        }).repeatedly()
     );
     private AddressableLED strip;
     private AddressableLEDBuffer buffer;
@@ -67,24 +72,6 @@ public class LED extends SubsystemBase {
         strip.setData(buffer);
     }
 
-    private static class RainbowLED extends CommandBase {
-        private LED led;
-
-        private RainbowLED(LED led) {
-            this.led = led;
-            addRequirements(led);
-        }
-
-        @Override
-        public void execute() {
-            int len = led.buffer.getLength();
-            int offset = (int)Math.floor((System.currentTimeMillis()/10) % len);
-            for (int i = 0; i < len; i++)
-                led.buffer.setHSV((i+offset) % len, (int)Math.floor(i * 180/len), 255, 255);
-            led.strip.setData(led.buffer);
-        }
-    }
-
     public static class BlinkLED extends SequentialCommandGroup {
         public BlinkLED(LED led){
             super(
@@ -93,6 +80,39 @@ public class LED extends SubsystemBase {
                 new InstantCommand(() -> led.startLED()),
                 new WaitCommand(0.5d)
             );
+        }
+    }
+
+    private static class ChromaLED extends CommandBase {
+        private LED led;
+        private LEDColorSupplier supplier;
+
+        private ChromaLED(LED led, LEDColorSupplier supplier) {
+            this.led = led;
+            this.supplier = supplier;
+            addRequirements(led);
+        }
+
+        @Override
+        public void execute() {
+            int len = led.buffer.getLength();
+            int offset = (int)Math.floor((System.currentTimeMillis()/10) % len);
+            for (int i = 0; i < len; i++)
+                led.buffer.setLED((i+offset) % len, supplier.get((double)i/len));
+            led.strip.setData(led.buffer);
+        }
+
+        public static interface LEDColorSupplier {
+            public Color get(double progress);
+        }
+    }
+
+    private static class LinearFlag extends ChromaLED {
+        private LinearFlag(LED led, int[] colors) {
+            super(led, (double progress) -> {
+                int color = colors[(int)Math.floor(progress*colors.length)];
+                return new Color(color & 0xff0000, color & 0x00ff00 >> 8, color & 0x0000ff >> 16);
+            });
         }
     }
 }
