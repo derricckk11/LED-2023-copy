@@ -23,10 +23,13 @@ public class Robot extends TimedRobot {
   private Joystick joystick = new Joystick(1);
   private JoystickButton yellowLED = new JoystickButton(joystick, 1);
   private JoystickButton purpleLED = new JoystickButton(joystick, 2);
-  private JoystickButton whiteLED = new JoystickButton(joystick, 3);
-  private JoystickButton rainbowLED = new JoystickButton(joystick, 4);
-  private JoystickButton blackLED = new JoystickButton(joystick, 5);
-  private JoystickButton blinkLED = new JoystickButton(joystick, 6);
+  private JoystickButton led3 = new JoystickButton(joystick, 3);
+  private JoystickButton led4 = new JoystickButton(joystick, 4);
+  private JoystickButton led5 = new JoystickButton(joystick, 5);
+  private JoystickButton led6 = new JoystickButton(joystick, 6);
+  private JoystickButton led7 = new JoystickButton(joystick, 7);
+  private JoystickButton led12= new JoystickButton(joystick, 12);
+  
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -35,10 +38,12 @@ public class Robot extends TimedRobot {
   public void configureButtonBindings(){
     yellowLED.onTrue(new InstantCommand(() -> led.setState(LEDState.YELLOW)));
     purpleLED.onTrue(new InstantCommand(() -> led.setState(LEDState.PURPLE)));
-    whiteLED.onTrue(new InstantCommand(() -> led.setState(LEDState.WHITE)));
-    rainbowLED.onTrue(new InstantCommand(() -> led.setState(LEDState.RAINBOW)));
-    blackLED.onTrue(new InstantCommand(() -> led.setState(LEDState.BLACK)));
-    blinkLED.toggleOnTrue(new LED.BlinkLED(led).repeatedly());
+    led3.onTrue(new InstantCommand(() -> led.setState(LEDState.RAINBOW)));
+    led4.onTrue(new InstantCommand(() -> led.setState(LEDState.NONBINARY)));
+    led5.onTrue(new InstantCommand(() -> led.setState(LEDState.LESBIAN)));
+    led6.onTrue(new InstantCommand(() -> led.setState(LEDState.TRANS)));
+    led7.onTrue(new InstantCommand(() -> led.setState(LEDState.BI)));
+    led12.toggleOnTrue(new LED.BlinkLED(led).repeatedly());
   }
 
   @Override

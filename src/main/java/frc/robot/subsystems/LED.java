@@ -14,12 +14,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class LED extends SubsystemBase {
     public enum LEDState {
-        WHITE,
-        PURPLE,
-        YELLOW,
-        BLACK,
-        RAINBOW,
-        NONBINARY
+        WHITE, BLACK, PURPLE, YELLOW,
+        RAINBOW, NONBINARY, GENDERFLUID, LESBIAN, BI, TRANS
     }
 
     private Map<LEDState, Command> commands = Map.of(
@@ -30,6 +26,18 @@ public class LED extends SubsystemBase {
         LEDState.RAINBOW, new ChromaLED(this, (double i) -> Color.fromHSV((int)Math.floor(i * 180), 255, 255)).repeatedly(),
         LEDState.NONBINARY, new LinearFlag(this, new int[]{
             0xFCF434, 0xFCFCFC, 0x9C59D1, 0x2C2C2C
+        }).repeatedly(),
+        LEDState.GENDERFLUID, new LinearFlag(this, new int[]{
+            0xFF75A2, 0xFFFFFF, 0xBE18D6, 0x000000, 0x323DBC
+        }).repeatedly(),
+        LEDState.LESBIAN, new LinearFlag(this, new int[]{
+            0xD52D00, 0xEF7627, 0xFF9A56, 0xFFFFFF, 0xD362A4, 0xB85490, 0xA30262
+        }).repeatedly(),
+        LEDState.BI, new LinearFlag(this, new int[]{
+            0xD60270, 0xD60270, 0x9B4F97, 0x0038A7, 0x0038A7
+        }).repeatedly(),
+        LEDState.TRANS, new LinearFlag(this, new int[]{
+            0x5BCEFA, 0xF5A9B8, 0xFFFFFF, 0xF5A9B8, 0x5BCEFA
         }).repeatedly()
     );
     private AddressableLED strip;
@@ -108,10 +116,15 @@ public class LED extends SubsystemBase {
     }
 
     private static class LinearFlag extends ChromaLED {
+        private static double reductionFactor = 0.8;
         private LinearFlag(LED led, int[] colors) {
             super(led, (double progress) -> {
-                int color = colors[(int)Math.floor(progress*colors.length)];
-                return new Color(color & 0xff0000, color & 0x00ff00 >> 8, color & 0x0000ff >> 16);
+                int color = colors[(int)Math.round(progress*(colors.length-1))];
+                return new Color(
+                    (int)Math.floor(((color >> 16)& 255) * reductionFactor),
+                    (int)Math.floor(((color >> 8) & 255) * reductionFactor), 
+                    (int)Math.floor(((color >> 0) & 255) * reductionFactor)
+                );
             });
         }
     }
