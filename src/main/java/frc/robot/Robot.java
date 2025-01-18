@@ -30,7 +30,10 @@ public class Robot extends TimedRobot {
   private JoystickButton led7 = new JoystickButton(joystick, 7);
   private JoystickButton led8 = new JoystickButton(joystick, 8);
   private JoystickButton led9 = new JoystickButton(joystick, 9);
-  private JoystickButton led13= new JoystickButton(joystick, 13);
+  private JoystickButton led10 = new JoystickButton(joystick, 10);
+  private JoystickButton led11 = new JoystickButton(joystick, 11);
+  //private JoystickButton led12 = new JoystickButton(joystick, 12); //not assigned
+  //private JoystickButton led13= new JoystickButton(joystick, 13); //not assigned
   
 
   /**
@@ -40,19 +43,23 @@ public class Robot extends TimedRobot {
   public void configureButtonBindings(){
     yellowLED.onTrue(new InstantCommand(() -> led.setState(LEDState.YELLOW)));
     purpleLED.onTrue(new InstantCommand(() -> led.setState(LEDState.PURPLE)));
-    led3.onTrue(new InstantCommand(() -> led.setState(LEDState.RAINBOW)));
-    led4.onTrue(new InstantCommand(() -> led.setState(LEDState.NONBINARY)));
-    led5.onTrue(new InstantCommand(() -> led.setState(LEDState.GENDERFLUID)));
-    led6.onTrue(new InstantCommand(() -> led.setState(LEDState.TRANS)));
-    led7.onTrue(new InstantCommand(() -> led.setState(LEDState.GAY)));
+    led3.onTrue(new InstantCommand(() -> led.setState(LEDState.RED)));
+    led4.onTrue(new InstantCommand(() -> led.setState(LEDState.WHITE)));
+    led5.onTrue(new InstantCommand(() -> led.setState(LEDState.BLUE)));
+    led6.onTrue(new InstantCommand(() -> led.setState(LEDState.RAINBOW)));
+    led7.onTrue(new InstantCommand(() -> led.setState(LEDState.RAINBOWCYCLE)));
+    //led8.onTrue(new InstantCommand(() -> led.setState(LEDState.GENDERFLUID)));
+    led9.onTrue(new InstantCommand(() -> led.setState(LEDState.TRANS)));
+    //led7.onTrue(new InstantCommand(() -> led.setState(LEDState.GAY)));
     led8.onTrue(new InstantCommand(() -> led.setState(LEDState.LESBIAN)));
-    led9.onTrue(new InstantCommand(() -> led.setState(LEDState.BI)));
-    led13.toggleOnTrue(new LED.BlinkLED(led).repeatedly());
+    //led9.onTrue(new InstantCommand(() -> led.setState(LEDState.BI)));
+    led10.onTrue(new InstantCommand(() -> led.setState(LEDState.NONBINARY)));
+    led11.toggleOnTrue(new LED.BlinkLED(led).repeatedly());
   }
 
   @Override
   public void robotInit() {
-
+    //led.startLED();
   }
 
   /**
@@ -85,6 +92,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    led.startLED();
+    System.out.println("led has started");
     configureButtonBindings();
   }
 
