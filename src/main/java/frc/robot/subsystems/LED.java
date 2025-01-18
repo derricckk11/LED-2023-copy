@@ -12,11 +12,13 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 
 public class LED extends SubsystemBase {
     public enum LEDState {
-        WHITE, BLACK, PURPLE, YELLOW,
-        RAINBOW, NONBINARY, GENDERFLUID, GAY, LESBIAN, BI, TRANS
+        WHITE, BLACK, PURPLE, YELLOW, RED, BLUE,
+        RAINBOW, RAINBOWCYCLE,
+        NONBINARY, GENDERFLUID, GAY, LESBIAN, BI, TRANS
     }
 
     private Map<LEDState, Command> commands = new HashMap<LEDState, Command>();
@@ -25,23 +27,28 @@ public class LED extends SubsystemBase {
         commands.put(LEDState.PURPLE, new InstantCommand(() -> setLED(70, 0, 100), this));
         commands.put(LEDState.YELLOW, new InstantCommand(() -> setLED(150, 75, 0), this));
         commands.put(LEDState.BLACK, new InstantCommand(() -> setLED(0, 0, 0), this));
+        commands.put(LEDState.RED, new InstantCommand(() -> setLED(75, 0, 0), this));
+        commands.put(LEDState.BLUE, new InstantCommand(() -> setLED(0, 0, 75), this));
         commands.put(LEDState.RAINBOW, new ChromaLED(this, (double i) -> Color.fromHSV((int)Math.floor(i * 180), 255, 255)).repeatedly());
-        commands.put(LEDState.NONBINARY, new LinearFlag(this, new int[]{
+        commands.put(LEDState.RAINBOWCYCLE, new ChromaLinearFlag(this, new int[]{
+            0xE40303, 0xFF8C00, 0xFFED00, 0x008026, 0x004DFF, 0x750787
+        }));
+        commands.put(LEDState.NONBINARY, new ChromaLinearFlag(this, new int[]{
             0xFCF434, 0xFCFCFC, 0x9C59D1, 0x2C2C2C
         }).repeatedly());
-        commands.put(LEDState.GENDERFLUID, new LinearFlag(this, new int[]{
+        commands.put(LEDState.GENDERFLUID, new ChromaLinearFlag(this, new int[]{
             0xFF75A2, 0xFFFFFF, 0xBE18D6, 0x000000, 0x323DBC
         }).repeatedly());
-        commands.put(LEDState.GAY, new LinearFlag(this, new int[]{
+        commands.put(LEDState.GAY, new ChromaLinearFlag(this, new int[]{
             0xE40303, 0xFF8C00, 0xFFED00, 0x008026, 0x004DFF, 0x750787
         }).repeatedly());
-        commands.put(LEDState.LESBIAN, new LinearFlag(this, new int[]{
+        commands.put(LEDState.LESBIAN, new ChromaLinearFlag(this, new int[]{
             0xD52D00, 0xEF7627, 0xFF9A56, 0xFFFFFF, 0xD362A4, 0xB85490, 0xA30262
         }).repeatedly());
-        commands.put(LEDState.BI, new LinearFlag(this, new int[]{
+        commands.put(LEDState.BI, new ChromaLinearFlag(this, new int[]{
             0xD60270, 0xD60270, 0x9B4F97, 0x0038A7, 0x0038A7
         }).repeatedly());
-        commands.put(LEDState.TRANS, new LinearFlag(this, new int[]{
+        commands.put(LEDState.TRANS, new ChromaLinearFlag(this, new int[]{
             0x5BCEFA, 0xF5A9B8, 0xFFFFFF, 0xF5A9B8, 0x5BCEFA
         }).repeatedly());
     };
@@ -50,20 +57,21 @@ public class LED extends SubsystemBase {
     private LEDState state;
 
     public LED() { 
-        strip = new AddressableLED(3);
-        buffer = new AddressableLEDBuffer(300);
+        strip = new AddressableLED(9);
+        buffer = new AddressableLEDBuffer(1000);
         strip.setLength(buffer.getLength());
-        state = LEDState.BLACK;
-        startLED();
+        state = LEDState.RED;
+
     }
 
     public void setState(LEDState state) {
+        if (state.equals(this.state)) return;
         getStateCommand().cancel();
         this.state = state;
         startLED();
     }
 
-    public Command getStateCommand() {
+    private Command getStateCommand() {
         return commands.get(state);
     }
 
@@ -78,7 +86,7 @@ public class LED extends SubsystemBase {
         strip.stop();
     }
 
-    public void setLED(int r, int g, int b) {
+    private void setLED(int r, int g, int b) {
         for (int i = 0; i < buffer.getLength(); i++) {
             buffer.setRGB(i, r, g, b);
         }
@@ -86,21 +94,81 @@ public class LED extends SubsystemBase {
     }
 
     public static class BlinkLED extends SequentialCommandGroup {
-        public BlinkLED(LED led){
+        public BlinkLED(LED led) {
             super(
                 new InstantCommand(() -> led.stopLED()),
-                new WaitCommand(0.5d),
+                new WaitCommand(0.5),
                 new InstantCommand(() -> led.startLED()),
-                new WaitCommand(0.5d)
+                new WaitCommand(0.5)
             );
         }
     }
 
-    private static class ChromaLED extends CommandBase {
-        private LED led;
-        private LEDColorSupplier supplier;
+    // public static class BlinkLEDFast extends SequentialCommandGroup {
+    //     //public static double delay = 0.5;
+    //     public static boolean isBlinking = true;
+    //     public BlinkLEDFast(LED led) {
+    //         super(
+    //             new InstantCommand(() -> led.stopLED()),
+    //             new WaitCommand(calculateBlinkDelay()),
+    //             new InstantCommand(() -> led.startLED()),
+    //             new WaitCommand(calculateBlinkDelay())
+    //         );
+    //     }
+    //     private static double calculateBlinkDelay() {
+    //         if (delay * Constants.Fun.blinkLEDDelayThreshold <= Constants.Fun.ledBlinkDelay) {
+    //             delay = Constants.Fun.ledBlinkDelay;
+    //             isBlinking = false;
+    //             return 0.0;
+    //         }
+    //         delay /= Constants.Fun.blinkLEDDelayDecrease;
+    //         return delay;
+    //     }
+    // }
 
-        private ChromaLED(LED led, LEDColorSupplier supplier) {
+    private static class CycleLED extends CommandBase {
+        private LED led;
+        private CycleColorSupplier supplier;
+
+        private CycleLED(LED led, CycleColorSupplier supplier) {
+            this.led = led;
+            this.supplier = supplier;
+            addRequirements(led);
+        }
+
+        @Override
+        public void execute() {
+            final var color = supplier.get(System.currentTimeMillis()/200);
+            for (int i = 0; i < led.buffer.getLength(); i++) led.buffer.setLED(i, color);
+            led.strip.setData(led.buffer);
+        }
+
+        @FunctionalInterface
+        public static interface CycleColorSupplier {
+            public Color get(long dt);
+        }
+    }
+
+    // private static class CycleLinearFlag extends CycleLED {
+    //     private CycleLinearFlag(LED led, int[] colors) {
+    //         super(led, (long dt) -> {
+    //             dt %= colors.length;
+    //             if (dt < 0) dt = -dt;
+    //             int color = colors[(int)dt];
+    //             return new Color(
+    //                 (int)Math.floor(((color >> 16)& 255) * Constants.Fun.ledReductionFactor),
+    //                 (int)Math.floor(((color >> 8) & 255) * Constants.Fun.ledReductionFactor), 
+    //                 (int)Math.floor(((color >> 0) & 255) * Constants.Fun.ledReductionFactor)
+    //             );
+    //         });
+    //     }
+    // }
+
+    private static class ChromaLED extends CommandBase  {
+        private LED led;
+        private ChromaColorSupplier supplier;
+
+        private ChromaLED(LED led, ChromaColorSupplier supplier) {
             this.led = led;
             this.supplier = supplier;
             addRequirements(led);
@@ -115,14 +183,15 @@ public class LED extends SubsystemBase {
             led.strip.setData(led.buffer);
         }
 
-        public static interface LEDColorSupplier {
+        @FunctionalInterface
+        public static interface ChromaColorSupplier {
             public Color get(double progress);
         }
     }
 
-    private static class LinearFlag extends ChromaLED {
+    private static class ChromaLinearFlag extends ChromaLED {
         private static double reductionFactor = 0.9;
-        private LinearFlag(LED led, int[] colors) {
+        private ChromaLinearFlag(LED led, int[] colors) {
             super(led, (double progress) -> {
                 int color = colors[(int)Math.floor(progress*colors.length)];
                 return new Color(
